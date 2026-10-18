@@ -134,16 +134,29 @@ jobs:
           set -uo pipefail
           ZIP=$(ls artifacts/EmojiDictionary-app.zip 2>/dev/null | head -1 || true)
           if [ -z "$ZIP" ]; then echo "sem EmojiDictionary-app.zip, nada a publicar"; exit 0; fi
-          RESP=$(curl -s --http1.1 --max-time 300 "https://api.appetize.io/v1/apps" \
+          KEY_EXISTENTE="qjqc2uko2hkjgnxce2gucyp3lu"   # app já criada; actualizamos sempre esta
+          extrair() { echo "$1" | python3 -c "import sys,json;print(json.load(sys.stdin).get('publicKey',''))" 2>/dev/null || true; }
+
+          RESP=$(curl -s --http1.1 --max-time 300 -X PATCH "https://api.appetize.io/v1/apps/$KEY_EXISTENTE" \
                     -u "$APPETIZE_API_TOKEN:" \
                     -F "file=@$ZIP" -F "platform=ios" || true)
-          echo "resposta do Appetize: $(echo "$RESP" | head -c 300)"
-          KEY=$(echo "$RESP" | python3 -c "import sys,json;print(json.load(sys.stdin).get('publicKey',''))" 2>/dev/null || true)
+          echo "resposta do Appetize (update): $(echo "$RESP" | head -c 200)"
+          KEY=$(extrair "$RESP")
+
+          if [ -z "$KEY" ]; then
+            echo "update falhou — vou criar uma app nova"
+            RESP=$(curl -s --http1.1 --max-time 300 "https://api.appetize.io/v1/apps" \
+                      -u "$APPETIZE_API_TOKEN:" \
+                      -F "file=@$ZIP" -F "platform=ios" || true)
+            echo "resposta do Appetize (create): $(echo "$RESP" | head -c 200)"
+            KEY=$(extrair "$RESP")
+          fi
+
           if [ -n "$KEY" ]; then
             echo "### Ecrã interactivo: https://appetize.io/app/$KEY" >> "$GITHUB_STEP_SUMMARY"
             echo "LINK INTERACTIVO: https://appetize.io/app/$KEY"
           else
-            echo "não recebi publicKey do Appetize (ver a resposta acima)"; exit 0
+            echo "não recebi publicKey do Appetize (ver as respostas acima)"; exit 0
           fi
 
       - name: Publicar artefacto
