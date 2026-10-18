@@ -134,8 +134,8 @@ jobs:
           set -uo pipefail
           ZIP=$(ls artifacts/EmojiDictionary-app.zip 2>/dev/null | head -1 || true)
           if [ -z "$ZIP" ]; then echo "sem EmojiDictionary-app.zip, nada a publicar"; exit 0; fi
-          RESP=$(curl -s --http1.1 --max-time 300 "https://api.appetize.io/v2/apps" \
-                    -H "Authorization: Bearer $APPETIZE_API_TOKEN" \
+          RESP=$(curl -s --http1.1 --max-time 300 "https://api.appetize.io/v1/apps" \
+                    -u "$APPETIZE_API_TOKEN:" \
                     -F "file=@$ZIP" -F "platform=ios" || true)
           echo "resposta do Appetize: $(echo "$RESP" | head -c 300)"
           KEY=$(echo "$RESP" | python3 -c "import sys,json;print(json.load(sys.stdin).get('publicKey',''))" 2>/dev/null || true)
