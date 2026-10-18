@@ -1,0 +1,89 @@
+name: iOS Simulator
+
+# Compila o projecto, arranca a app num simulador de iPhone, tira um screenshot
+# e corre os testes unitários — tudo num runner macOS gratuito do GitHub.
+# Resultado: artefacto "ios-simulator" com as imagens e o log dos testes.
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Versões (Xcode / simuladores)
+        run: |
+          xcodebuild -version
+          xcrun simctl list devices available | grep -i iphone | head -5
+
+      - name: Escolher simulador e arrancá-lo
+        id: sim
+        run: |
+          set -euo pipefail
+          NAME=$(xcrun simctl list devices available | sed -nE 's/^ *iPhone [^(]*\(([0-9A-Fa-f-]{36})\) \(Shutdown\).*/\1/p' | head -1)
+          if [ -z "$NAME" ]; then NAME=$(xcrun simctl list devices available | grep -m1 -oE '[0-9A-Fa-f-]{36}'); fi
+          echo "udid=$NAME" >> "$GITHUB_OUTPUT"
+          echo "simulador: $NAME"
+          xcrun simctl boot "$NAME" || true
+          xcrun simctl bootstatus "$NAME" -b
+
+      - name: Compilar (build)
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project EmojiDictionary.xcodeproj \
+            -scheme EmojiDictionary \
+            -configuration Debug \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO | tail -40
+
+      - name: Instalar, arrancar e tirar screenshot
+        run: |
+          set -euo pipefail
+          UDID="${{ steps.sim.outputs.udid }}"
+          APP=$(find build/Build/Products -maxdepth 3 -name "EmojiDictionary.app" | head -1)
+          echo "app: $APP"
+          mkdir -p artifacts
+          xcrun simctl install "$UDID" "$APP"
+          xcrun simctl launch "$UDID" com.example.EmojiDictionary
+          sleep 8
+          xcrun simctl io "$UDID" screenshot artifacts/01-lista.png
+          ls -la artifacts
+
+      - name: Testes unitários no simulador
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project EmojiDictionary.xcodeproj \
+            -scheme EmojiDictionary \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            -resultBundlePath artifacts/testes.xcresult | tail -60
+
+      - name: Screenshot final (depois dos testes)
+        if: always()
+        run: |
+          set -euo pipefail
+          UDID="${{ steps.sim.outputs.udid }}"
+          xcrun simctl launch "$UDID" com.example.EmojiDictionary || true
+          sleep 6
+          xcrun simctl io "$UDID" screenshot artifacts/02-lista-depois-dos-testes.png || true
+
+      - name: Publicar artefacto
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-simulator
+          path: |
+            artifacts/
+            build/Logs/Test/*.xcresult/../*.log
+          if-no-files-found: warn

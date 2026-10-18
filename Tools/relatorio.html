@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<title>Emoji Dictionary — Relatório (Ficha 3, Storyboard/UIKit)</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 10.5pt; line-height: 1.45; color: #1c1c1e; margin: 0; }
+  h1 { font-size: 19pt; margin: 0 0 2mm 0; }
+  h2 { font-size: 13.5pt; margin: 7mm 0 2mm 0; border-bottom: 2px solid #0a84ff; padding-bottom: 1mm; page-break-after: avoid; }
+  h3 { font-size: 11.5pt; margin: 4mm 0 1.5mm 0; page-break-after: avoid; }
+  .sub { color: #6c6c70; font-size: 10pt; margin-bottom: 4mm; }
+  code { background: #f2f2f7; padding: 0.5mm 1.2mm; border-radius: 2px; font-family: Consolas, 'Courier New', monospace; font-size: 9.5pt; }
+  pre { background: #f7f7fa; border: 1px solid #e3e3e8; border-radius: 3px; padding: 2.5mm 3mm; font-size: 9pt; line-height: 1.35; overflow-wrap: anywhere; page-break-inside: avoid; }
+  table { border-collapse: collapse; width: 100%; font-size: 9.5pt; page-break-inside: avoid; margin: 2mm 0 3mm 0; }
+  th, td { border: 1px solid #d1d1d6; padding: 1.4mm 2mm; text-align: left; vertical-align: top; }
+  th { background: #f2f2f7; font-weight: 600; }
+  ol, ul { margin: 1.5mm 0 2mm 5mm; padding: 0; }
+  li { margin-bottom: 0.8mm; }
+  figure.fig { margin: 3mm 0 4mm 0; page-break-inside: avoid; text-align: center; }
+  figcaption { font-size: 9pt; color: #6c6c70; margin-top: 1.2mm; }
+  .box { background: #f0f7ff; border-left: 3px solid #0a84ff; padding: 2.5mm 3mm; margin: 3mm 0; page-break-inside: avoid; font-size: 10pt; }
+  .res { background: #f1fbf3; border-left: 3px solid #34c759; padding: 2mm 3mm; margin: 2mm 0 3mm 0; font-size: 10pt; page-break-inside: avoid; }
+  .warn { background: #fff8ec; border-left: 3px solid #ff9f0a; padding: 2.5mm 3mm; margin: 3mm 0; font-size: 10pt; page-break-inside: avoid; }
+  svg text { font-family: 'Segoe UI', system-ui, sans-serif; }
+  .figwrap { display: inline-block; }
+</style>
+</head>
+<body>
+
+<h1>Emoji Dictionary — Relatório</h1>
+<div class="sub">Cadeira: Desenvolvimento para Dispositivos Móveis · Ficha 3 (Storyboard / UIKit) · projecto <code>EmojiDictionary</code> (Swift, Interface: Storyboard)</div>
+
+<div class="box">
+<b>O que foi entregue.</b> Projecto Xcode completo em <code>EmojiDictionary/</code> — 5 ficheiros Swift, <code>Main.storyboard</code> com as 4 cenas, <code>project.pbxproj</code>, <code>Info.plist</code>, <code>Assets.xcassets</code> e <code>LaunchScreen.storyboard</code>.
+Todas as ligações da ficha (outlets, acções, segues, unwind, células estáticas, constraints) estão declaradas e verificadas por um verificador que corre no Windows: <code>Tools/verify_project.py</code> → <b>111 verificações, 0 falhas</b>.
+</div>
+
+<div class="warn">
+<b>Limite honesto desta entrega.</b> O projecto foi escrito e verificado fora do macOS, portanto <b>estrutura e ligações estão verificadas, mas a compilação/execução não</b> — isso exige Xcode. Basta abrir <code>EmojiDictionary.xcodeproj</code> num Mac (ou na VM de macOS) e correr <code>⌘R</code> no simulador de iPhone: não há passos manuais pendentes no storyboard.
+</div>
+
+<h2>0. Configuração do projecto</h2>
+<p>O projecto segue exactamente o template da ficha: <b>iOS &gt; App</b>, nome <code>EmojiDictionary</code>, Interface <b>Storyboard</b>, linguagem <b>Swift</b>.</p>
+
+<figure class="fig">
+<div class="figwrap">
+<svg width="900" height="300" viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#3a3a3c"/></marker></defs>
+  <text x="12" y="20" font-size="15" font-weight="700" fill="#1c1c1e">EmojiDictionary/</text>
+  <rect x="12" y="32" width="400" height="252" rx="6" fill="#f7f7fa" stroke="#d1d1d6"/>
+  <g font-size="13" fill="#1c1c1e">
+    <text x="28" y="58">EmojiDictionary.xcodeproj</text><text x="270" y="58" font-size="11" fill="#6c6c70">project.pbxproj — alvo, fases, build settings</text>
+    <text x="28" y="88">EmojiDictionary/</text><text x="270" y="88" font-size="11" fill="#6c6c70">grupo do código</text>
+    <text x="44" y="114">AppDelegate.swift</text><text x="270" y="114" font-size="11" fill="#6c6c70">entry point (@main)</text>
+    <text x="44" y="140">SceneDelegate.swift</text><text x="270" y="140" font-size="11" fill="#6c6c70">janela da cena</text>
+    <text x="44" y="166">Emoji.swift</text><text x="270" y="166" font-size="11" fill="#6c6c70">modelo + 6 emojis de exemplo</text>
+    <text x="44" y="192">EmojiTableViewController.swift</text><text x="270" y="192" font-size="11" fill="#6c6c70">célula + lista (CRUD/reordenar)</text>
+    <text x="44" y="218">AddEditEmojiTableViewController.swift</text><text x="270" y="218" font-size="11" fill="#6c6c70">formulário estático</text>
+    <text x="44" y="244">Main.storyboard</text><text x="270" y="244" font-size="11" fill="#6c6c70">4 cenas + segues</text>
+    <text x="44" y="270">LaunchScreen.storyboard, Assets.xcassets, Info.plist</text>
+  </g>
+  <rect x="450" y="32" width="438" height="252" rx="6" fill="#f0f7ff" stroke="#0a84ff"/>
+  <g font-size="13" fill="#1c1c1e">
+    <text x="470" y="58" font-weight="600">Ficheiros criados pelo template</text>
+    <text x="470" y="82" font-size="12">AppDelegate.swift · SceneDelegate.swift</text>
+    <text x="470" y="106" font-weight="600">Ficheiros acrescentados à mão</text>
+    <text x="470" y="130" font-size="12">Emoji.swift (Swift File)</text>
+    <text x="470" y="154" font-size="12">EmojiTableViewController.swift</text>
+    <text x="470" y="178" font-size="12">AddEditEmojiTableViewController.swift</text>
+    <text x="470" y="202" font-size="12">(ambos Cocoa Touch Class → UITableViewController)</text>
+    <text x="470" y="232" font-weight="600">Removido</text>
+    <text x="470" y="256" font-size="12">ViewController.swift + a cena “View Controller”</text>
+    <text x="470" y="276" font-size="12">(substituídos pelo Navigation Controller)</text>
+  </g>
+</svg>
+</div>
+<figcaption>Figura 0. Estrutura do projecto entregue e a origem de cada ficheiro.</figcaption>
+</figure>
+
+<ol>
+  <li><b>File &gt; New &gt; Project…</b> → template <b>iOS &gt; App</b>.</li>
+  <li>Nome <b>EmojiDictionary</b>; Interface <b>Storyboard</b>; Language <b>Swift</b>.</li>
+  <li>Ficheiros gerados: <code>AppDelegate.swift</code>, <code>SceneDelegate.swift</code>, <code>ViewController.swift</code>, <code>Main.storyboard</code>.</li>
+</ol>
+<div class="res"><b>Resultado esperado:</b> projecto que compila e mostra uma cena vazia; aqui o <code>ViewController</code> inicial foi eliminado na secção 2.</div>
+
+<h2>1. Modelo</h2>
+<p>O modelo é um <code>struct</code> com os quatro campos que a célula e o formulário mostram, mais uma extensão com os seis emojis de exemplo (fonte única de dados da lista).</p>
+
+<figure class="fig">
+<div class="figwrap">
+<svg width="900" height="230" viewBox="0 0 900 230" xmlns="http://www.w3.org/2000/svg">
+  <rect x="20" y="20" width="330" height="180" rx="6" fill="#f7f7fa" stroke="#d1d1d6"/>
+  <text x="40" y="46" font-size="15" font-weight="700" fill="#1c1c1e">struct Emoji</text>
+  <g font-size="13" fill="#1c1c1e">
+    <text x="40" y="76">var symbol: String      😀</text>
+    <text x="40" y="102">var name: String        Grinning Face</text>
+    <text x="40" y="128">var description: String A typical smiley face.</text>
+    <text x="40" y="154">var usage: String       happiness</text>
+    <text x="40" y="184" font-size="11" fill="#6c6c70">Foundation · sem UIKit (dados puros)</text>
+  </g>
+  <rect x="380" y="20" width="500" height="180" rx="6" fill="#f1fbf3" stroke="#34c759"/>
+  <text x="400" y="46" font-size="15" font-weight="700" fill="#1c1c1e">extension Emoji — sampleEmojis (6)</text>
+  <g font-size="12.5" fill="#1c1c1e">
+    <text x="400" y="76">😀 Grinning Face · 😕 Confused Face · 😍 Heart Eyes</text>
+    <text x="400" y="102">🧑‍💻 Developer · 🐢 Turtle · 📚 Books</text>
+    <text x="400" y="132" font-size="11.5" fill="#6c6c70">static var sampleEmojis: [Emoji] { [ … ] }</text>
+    <text x="400" y="158" font-size="11.5" fill="#6c6c70">Consumido por: EmojiTableViewController.emojis</text>
+    <text x="400" y="184" font-size="11.5" fill="#6c6c70">e enviado para a célula por cell.update(with:)</text>
+  </g>
+</svg>
+</div>
+<figcaption>Figura 1. Modelo <code>Emoji</code> e a extensão com os dados de exemplo.</figcaption>
+</figure>
+
+<pre>struct Emoji {
+    var symbol: String
+    var name: String
+    var description: String
+    var usage: String
+}
+
+extension Emoji {
+    static var sampleEmojis: [Emoji] { [ /* 6 Emoji(symbol:name:description:usage:) */ ] }
+}</pre>
+<div class="res"><b>Resultado esperado:</b> <code>Emoji.sampleEmojis.count == 6</code>, verificado pelo script (conta os <code>Emoji(symbol:</code> no ficheiro).</div>
+
+<h2>2. Navegação e lista principal</h2>
+<p>A cena “View Controller” do template foi apagada e substituída por um <b>Navigation Controller</b> com um <b>Table View Controller</b> como root, ligado à classe <code>EmojiTableViewController</code>. O título da barra é <b>Emoji Dictionary</b> e o botão direito é o <b>System Item Add</b>.</p>
+
+<figure class="fig">
+<div class="figwrap">
+<svg width="900" height="250" viewBox="0 0 900 250" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="ar2" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#0a84ff"/></marker></defs>
+  <rect x="20" y="70" width="220" height="90" rx="6" fill="#f0f7ff" stroke="#0a84ff"/>
+  <text x="38" y="98" font-size="13.5" font-weight="700" fill="#1c1c1e">Navigation Controller</text>
+  <text x="38" y="122" font-size="12" fill="#3a3a3c">initialViewController ✔</text>
+  <text x="38" y="144" font-size="12" fill="#6c6c70">barra de navegação no topo</text>
+  <line x1="240" y1="115" x2="330" y2="115" stroke="#0a84ff" stroke-width="2" marker-end="url(#ar2)"/>
+  <text x="248" y="106" font-size="11.5" fill="#0a84ff">relationship</text>
+  <text x="248" y="134" font-size="11.5" fill="#0a84ff">rootViewController</text>
+  <rect x="335" y="40" width="270" height="150" rx="6" fill="#f7f7fa" stroke="#d1d1d6"/>
+  <text x="353" y="68" font-size="13.5" font-weight="700" fill="#1c1c1e">EmojiTableViewController</text>
+  <text x="353" y="92" font-size="12" fill="#3a3a3c">navigationItem.title = “Emoji Dictionary”</text>
+  <text x="353" y="116" font-size="12" fill="#3a3a3c">rightBarButtonItem = System Item Add</text>
+  <text x="353" y="140" font-size="12" fill="#3a3a3c">view = UITableView (Prototype Cells = 1)</text>
+  <text x="353" y="164" font-size="11.5" fill="#6c6c70">leftBarButtonItem = editButtonItem (em código)</text>
+  <rect x="640" y="40" width="245" height="150" rx="6" fill="#f1fbf3" stroke="#34c759"/>
+  <text x="658" y="68" font-size="13.5" font-weight="700" fill="#1c1c1e">Barra de navegação</text>
+  <text x="658" y="94" font-size="12" fill="#3a3a3c">título: Emoji Dictionary</text>
+  <text x="658" y="118" font-size="12" fill="#3a3a3c">esquerda: Edit (automático)</text>
+  <text x="658" y="142" font-size="12" fill="#3a3a3c">direita: + (Add)</text>
+  <text x="658" y="168" font-size="11.5" fill="#6c6c70">o + leva o segue AddEmoji (§6)</text>
+</svg>
+</div>
+<figcaption>Figura 2. Cenas da secção 2: Navigation Controller → lista.</figcaption>
+</figure>
+
+<ol>
+  <li>Seleccionar a cena “View Controller” em <code>Main.storyboard</code> e apagar (<b>Delete</b>).</li>
+  <li>Object Library (<b>⇧⌘L</b>) → arrastar <b>Navigation Controller</b> (cria o Table View Controller como root).</li>
+  <li>Navigation Controller → Attributes Inspector → <b>Is Initial View Controller</b> ✔.</li>
+  <li><b>File &gt; New &gt; File… &gt; Cocoa Touch Class</b> → <code>EmojiTableViewController</code>, subclasse de <code>UITableViewController</code>.</li>
+  <li>Identity Inspector do root → Class = <code>EmojiTableViewController</code>.</li>
+  <li>Navigation Item → Attributes Inspector → Title = <b>Emoji Dictionary</b>.</li>
+  <li>Arrstas um <b>Bar Button Item</b> para a direita da barra → Attributes Inspector → System Item = <b>Add</b>.</li>
+</ol>
+<div class="res"><b>Resultado esperado:</b> ao correr, a app abre já dentro de um UINavigationController com a barra “Emoji Dictionary”, o botão <b>+</b> à direita e o <b>Edit</b> à esquerda (o Edit é instalado em código, §4).</div>
+
+<h2>3. Célula personalizada e layout</h2>
+<p>A célula é a classe <code>EmojiTableViewCell</code> (declarada no topo de <code>EmojiTableViewController.swift</code>) com três labels: símbolo, nome e descrição. O layout usa um <b>stack vertical</b> (nome + descrição) embutido num <b>stack horizontal</b> (símbolo + vertical), fixo às margens da Content View.</p>
+
+<figure class="fig">
+<div class="figwrap">
+<svg width="900" height="330" viewBox="0 0 900 330" xmlns="http://www.w3.org/2000/svg">
+  <rect x="20" y="20" width="520" height="290" rx="6" fill="#f7f7fa" stroke="#d1d1d6"/>
+  <text x="38" y="46" font-size="13.5" font-weight="700" fill="#1c1c1e">UITableViewCell (EmojiTableViewCell · reuseIdentifier “EmojiCell”)</text>
+  <rect x="40" y="62" width="480" height="228" rx="5" fill="#ffffff" stroke="#c7c7cc" stroke-dasharray="4 3"/>
+  <text x="52" y="82" font-size="11.5" fill="#6c6c70">contentView — máscaras de margem: 16 pt</text>
+  <rect x="60" y="96" width="440" height="120" rx="5" fill="#eef6ff" stroke="#0a84ff"/>
+  <text x="74" y="116" font-size="12.5" font-weight="600" fill="#0a84ff">StackView horizontal — spacing 12 · alignment center</text>
+  <rect x="76" y="130" width="130" height="70" rx="4" fill="#fff" stroke="#8e8e93"/>
+  <text x="96" y="158" font-size="26">😀</text>
+  <text x="86" y="184" font-size="11.5" fill="#3a3a3c">symbolLabel</text>
+  <text x="86" y="196" font-size="10.5" fill="#6c6c70">34 pt · hug 252 · comp 751</text>
+  <rect x="220" y="130" width="265" height="70" rx="4" fill="#f1fbf3" stroke="#34c759"/>
+  <text x="234" y="148" font-size="12" font-weight="600" fill="#34c759">StackView vertical — spacing 2 · alignment leading</text>
+  <text x="234" y="170" font-size="12" fill="#1c1c1e">Grinning Face</text>
+  <text x="234" y="186" font-size="11" fill="#6c6c70">nameLabel 17 pt semibold (Headline)</text>
+  <text x="234" y="200" font-size="11" fill="#6c6c70">descrição 15 pt, Secondary Label, Lines 0, Word Wrap</text>
+  <rect x="60" y="232" width="440" height="46" rx="4" fill="#fff" stroke="#ff9f0a"/>
+  <text x="74" y="252" font-size="11.5" fill="#1c1c1e">Constraints para a contentView: Leading 16 · Trailing 16 · Top 8 · Bottom 8</text>
+  <text x="74" y="270" font-size="11.5" fill="#6c6c70">rowHeight = automaticDimension · estimatedRowHeight = 60 (em código)</text>
+
+  <rect x="565" y="20" width="320" height="290" rx="6" fill="#fff8ec" stroke="#ff9f0a"/>
+  <text x="583" y="46" font-size="13" font-weight="700" fill="#1c1c1e">Object / Inspectors usados</text>
+  <g font-size="12" fill="#1c1c1e">
+    <text x="583" y="74">Object Library (⇧⌘L)</text><text x="583" y="92" font-size="11" fill="#6c6c70">labels, stack views, bar button items</text>
+    <text x="583" y="120">Identity Inspector</text><text x="583" y="138" font-size="11" fill="#6c6c70">Class = EmojiTableViewCell · Identifier = EmojiCell</text>
+    <text x="583" y="166">Attributes Inspector</text><text x="583" y="184" font-size="11" fill="#6c6c70">fontes, cor, Lines, Line Break, System Item</text>
+    <text x="583" y="212">Editor &gt; Embed In &gt; Stack View</text><text x="583" y="230" font-size="11" fill="#6c6c70">vertical e depois horizontal</text>
+    <text x="583" y="258">Size Inspector</text><text x="583" y="276" font-size="11" fill="#6c6c70">Content Hugging 252 · Compression 751</text>
+  </g>
+</svg>
+</div>
+<figcaption>Figura 3. Hierarquia da célula, constraints e as prioridades do símbolo.</figcaption>
+</figure>
+
+<ol>
+  <li>TableView → Prototype Cells = <b>1</b>; célula → Identity: Class <code>EmojiTableViewCell</code>, Identifier <code>EmojiCell</code>.</li>
+  <li>Três labels na Content View: símbolo (Large Title / 34), nome (Headline / 17 semibold), descrição (Subheadline / 15, Secondary Label, Lines = 0, Word Wrap).</li>
+  <li>Nome + descrição → <b>Editor &gt; Embed In &gt; Stack View</b> (vertical, spacing 2, alignment Leading).</li>
+  <li>Símbolo + stack vertical → <b>Embed In &gt; Stack View</b> (horizontal, spacing 12, alignment Center).</li>
+  <li>Stack horizontal → Add New Constraints → Leading 16, Trailing 16, Top 8, Bottom 8.</li>
+  <li>symbolLabel → Size Inspector → Hugging horizontal <b>252</b>, Compression Resistance <b>751</b>.</li>
+  <li>Assistant Editor: <b>Control-drag</b> de cada label para <code>symbolLabel</code>, <code>nameLabel</code>, <code>descriptionLabel</code>.</li>
+</ol>
+<div class="res"><b>Resultado esperado:</b> cada linha mostra o emoji grande à esquerda e, à direita, o nome com a descrição por baixo; as linhas crescem em altura quando a descrição ocupa duas linhas (altura automática).</div>
+
+<h2>4. Ecrã de lista (implementação)</h2>
+<p>O controlador define as três fontes de dados, a remoção com <b>swipe-to-delete</b>, o <b>reordenamento</b> com o modo de edição e a altura automática das células.</p>
+
+<figure class="fig">
+<div class="figwrap">
+<svg width="900" height="300" viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="ar3" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#3a3a3c"/></marker></defs>
+  <rect x="20" y="30" width="180" height="110" rx="6" fill="#eef6ff" stroke="#0a84ff"/>
+  <text x="38" y="56" font-size="12.5" font-weight="700" fill="#1c1c1e">viewDidLoad()</text>
+  <text x="38" y="80" font-size="11.5" fill="#3a3a3c">editButtonItem → left</text>
+  <text x="38" y="100" font-size="11.5" fill="#3a3a3c">rowHeight = automatic</text>
+  <text x="38" y="120" font-size="11.5" fill="#3a3a3c">estimatedRowHeight = 60</text>
+  <line x1="200" y1="85" x2="270" y2="85" stroke="#3a3a3c" stroke-width="2" marker-end="url(#ar3)"/>
+  <rect x="275" y="20" width="250" height="130" rx="6" fill="#f7f7fa" stroke="#d1d1d6"/>
+  <text x="293" y="46" font-size="12.5" font-weight="700" fill="#1c1c1e">UITableViewDataSource</text>
+  <text x="293" y="70" font-size="11.5" fill="#3a3a3c">numberOfSections → 1</text>
+  <text x="293" y="92" font-size="11.5" fill="#3a3a3c">numberOfRowsInSection</text>
+  <text x="305" y="108" font-size="11" fill="#6c6c70">→ emojis.count</text>
+  <text x="293" y="130" font-size="11.5" fill="#3a3a3c">cellForRowAt</text>
+  <text x="305" y="146" font-size="11" fill="#6c6c70">dequeue “EmojiCell” → cell.update(with:)</text>
+  <line x1="525" y1="85" x2="595" y2="85" stroke="#3a3a3c" stroke-width="2" marker-end="url(#ar3)"/>
+  <rect x="600" y="20" width="280" height="130" rx="6" fill="#f1fbf3" stroke="#34c759"/>
+  <text x="618" y="46" font-size="12.5" font-weight="700" fill="#1c1c1e">Edição</text>
+  <text x="618" y="70" font-size="11.5" fill="#3a3a3c">commit editingStyle: .delete</text>
+  <text x="630" y="88" font-size="11" fill="#6c6c70">emojis.remove(at:) + deleteRows(…, .fade)</text>
+  <text x="618" y="114" font-size="11.5" fill="#3a3a3c">moveRowAt:to:</text>
+  <text x="630" y="132" font-size="11" fill="#6c6c70">remove + insert na mesma array</text>
+
+  <rect x="20" y="175" width="860" height="105" rx="6" fill="#f0f7ff" stroke="#0a84ff"/>
+  <text x="38" y="200" font-size="12.5" font-weight="700" fill="#1c1c1e">Célula: EmojiTableViewCell.update(with:)</text>
+  <text x="38" y="226" font-size="12" fill="#3a3a3c">symbolLabel.text = emoji.symbol · nameLabel.text = emoji.name · descriptionLabel.text = emoji.description</text>
+  <text x="38" y="252" font-size="12" fill="#3a3a3c">cell.showsReorderControl = true → a pega de reordenamento aparece no modo de edição</text>
+  <text x="38" y="272" font-size="11" fill="#6c6c70">A array <tspan font-weight="600">emojis</tspan> é a única fonte de verdade: qualquer alteração é feita na array e depois notificada à tabela.</text>
+</svg>
+</div>
+<figcaption>Figura 4. Fluxo de dados da lista e as operações de edição.</figcaption>
+</figure>
+
+<pre>override func viewDidLoad() {
+    super.viewDidLoad()
+    navigationItem.leftBarButtonItem = editButtonItem
+    tableView.rowHeight = UITableView.automaticDimension
+    tableView.estimatedRowHeight = 60.0
+}</pre>
+<div class="res"><b>Resultado esperado:</b> deslizar para a esquerda revela <b>Delete</b>; o botão <b>Edit</b> mostra os badges de remoção e as pegas de reordenamento; nenhuma alteração é feita só na view — a array é sempre actualizada primeiro.</div>
+
+<h2>5. Ecrã Add / Edit (formulário estático)</h2>
+<p>O segundo controlador é um <code>UITableViewController</code> com <b>células estáticas</b> (4 secções, 1 linha cada), apresentado dentro do seu próprio Navigation Controller para ter barra com <b>Cancel</b> e <b>Save</b>.</p>
+
+<figure class="fig">
+<div class="figwrap">
+<svg width="900" height="330" viewBox="0 0 900 330" xmlns="http://www.w3.org/2000/svg">
+  <rect x="20" y="20" width="420" height="290" rx="6" fill="#f7f7fa" stroke="#d1d1d6"/>
+  <text x="38" y="46" font-size="13.5" font-weight="700" fill="#1c1c1e">UITableViewController estático · style Inset Grouped</text>
+  <rect x="40" y="60" width="380" height="58" rx="4" fill="#fff" stroke="#c7c7cc"/>
+  <text x="52" y="78" font-size="11" fill="#6c6c70">Secção 0 · header “Symbol”</text>
+  <text x="52" y="100" font-size="12" fill="#1c1c1e">The emoji  → symbolTextField</text>
+  <rect x="40" y="126" width="380" height="58" rx="4" fill="#fff" stroke="#c7c7cc"/>
+  <text x="52" y="144" font-size="11" fill="#6c6c70">Secção 1 · header “Name”</text>
+  <text x="52" y="166" font-size="12" fill="#1c1c1e">The emoji's name → nameTextField</text>
+  <rect x="40" y="192" width="380" height="58" rx="4" fill="#fff" stroke="#c7c7cc"/>
+  <text x="52" y="210" font-size="11" fill="#6c6c70">Secção 2 · header “Description”</text>
+  <text x="52" y="232" font-size="12" fill="#1c1c1e">Describe this emoji → descriptionTextField</text>
+  <rect x="40" y="258" width="380" height="46" rx="4" fill="#fff" stroke="#c7c7cc"/>
+  <text x="52" y="276" font-size="11" fill="#6c6c70">Secção 3 · header “Usage”</text>
+  <text x="240" y="276" font-size="12" fill="#1c1c1e">When do you use it?</text>
+
+  <rect x="465" y="20" width="415" height="140" rx="6" fill="#f1fbf3" stroke="#34c759"/>
+  <text x="483" y="46" font-size="12.5" font-weight="700" fill="#1c1c1e">Barra de navegação</text>
+  <text x="483" y="72" font-size="12" fill="#3a3a3c">esquerda: Cancel → cancelButtonTapped:</text>
+  <text x="483" y="96" font-size="12" fill="#3a3a3c">direita: Save → saveButton (outlet) + unwind saveUnwind</text>
+  <text x="483" y="122" font-size="11.5" fill="#6c6c70">title definido em código: “Add Emoji” / “Edit Emoji”</text>
+  <text x="483" y="144" font-size="11.5" fill="#6c6c70">Inset Grouped + preservesSuperviewLayoutMargins</text>
+
+  <rect x="465" y="175" width="415" height="135" rx="6" fill="#eef6ff" stroke="#0a84ff"/>
+  <text x="483" y="200" font-size="12.5" font-weight="700" fill="#1c1c1e">Validação do Save</text>
+  <text x="483" y="226" font-size="12" fill="#3a3a3c">textEditingChanged: (Editing Changed, 4 campos)</text>
+  <text x="483" y="250" font-size="12" fill="#3a3a3c">→ updateSaveButtonState()</text>
+  <text x="483" y="274" font-size="12" fill="#3a3a3c">saveButton.isEnabled = !symbol.isEmpty &amp;&amp; !name… </text>
+  <text x="483" y="296" font-size="11.5" fill="#6c6c70">(trim de espaços antes de testar cada campo)</text>
+</svg>
+</div>
+<figcaption>Figura 5. Formulário estático, barra e validação do botão Save.</figcaption>
+</figure>
+
+<ol>
+  <li>Novo <b>Table View Controller</b> → <b>Editor &gt; Embed In &gt; Navigation Controller</b>.</li>
+  <li>Identity Inspector → Class = <code>AddEditEmojiTableViewController</code>.</li>
+  <li>TableView → Attributes Inspector → Content = <b>Static Cells</b>, Style = <b>Inset Grouped</b>, Sections = <b>4</b>; cada secção com <b>Rows = 1</b>.</li>
+  <li>Headers: <b>Symbol</b>, <b>Name</b>, <b>Description</b>, <b>Usage</b>; um Text Field em cada célula com os placeholders acima, fixo com Leading 16, Trailing 16, Center Vertically.</li>
+  <li>Barra: <b>Cancel</b> à esquerda (title Cancel) e <b>Save</b> à direita (System Item Save).</li>
+  <li>Ligações: 4 text fields + saveButton (outlets); Cancel → <code>cancelButtonTapped:</code>; os 4 campos → <code>textEditingChanged:</code> com o evento <b>Editing Changed</b>.</li>
+</ol>
+<div class="res"><b>Resultado esperado:</b> o Save começa desactivado e só fica azul quando os quatro campos têm texto (sem contar espaços); em modo de edição o formulário abre preenchido com o emoji escolhido e o título passa a “Edit Emoji”.</div>
+
+<h2>6. Navegação, segues e passagem de dados</h2>
+<p>Duas apresentações modais (Add e Edit) e um <b>unwind segue</b> para devolver os dados: o <code>prepare(for:)</code> do formulário constrói o <code>Emoji</code>, e o <code>unwindToEmojiTableView(_:)</code> da lista decide entre <b>actualizar</b> e <b>inserir</b>.</p>
+
+<figure class="fig">
+<div class="figwrap">
+<svg width="900" height="360" viewBox="0 0 900 360" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="ar4" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#0a84ff"/></marker>
+         <marker id="ar5" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#34c759"/></marker></defs>
+  <rect x="20" y="120" width="230" height="120" rx="6" fill="#f7f7fa" stroke="#d1d1d6"/>
+  <text x="38" y="146" font-size="13" font-weight="700" fill="#1c1c1e">EmojiTableViewController</text>
+  <text x="38" y="170" font-size="11.5" fill="#3a3a3c">botão + (barra)</text>
+  <text x="38" y="192" font-size="11.5" fill="#3a3a3c">célula EmojiCell</text>
+  <text x="38" y="214" font-size="11.5" fill="#3a3a3c">@IBAction unwindToEmojiTableView</text>
+
+  <rect x="360" y="120" width="230" height="120" rx="6" fill="#eef6ff" stroke="#0a84ff"/>
+  <text x="378" y="146" font-size="13" font-weight="700" fill="#1c1c1e">Navigation Controller</text>
+  <text x="378" y="170" font-size="11.5" fill="#3a3a3c">root → AddEditEmojiTableViewController</text>
+  <text x="378" y="192" font-size="11.5" fill="#3a3a3c">destino de AddEmoji e EditEmoji</text>
+  <text x="378" y="214" font-size="11.5" fill="#3a3a3c">presentation: Present Modally</text>
+
+  <rect x="650" y="40" width="230" height="100" rx="6" fill="#f1fbf3" stroke="#34c759"/>
+  <text x="668" y="66" font-size="13" font-weight="700" fill="#1c1c1e">AddEditEmojiTableViewController</text>
+  <text x="668" y="90" font-size="11.5" fill="#3a3a3c">emoji: Emoji? (a preencher)</text>
+  <text x="668" y="112" font-size="11.5" fill="#3a3a3c">prepare(for:) com saveUnwind</text>
+
+  <line x1="250" y1="145" x2="355" y2="145" stroke="#0a84ff" stroke-width="2" marker-end="url(#ar4)"/>
+  <text x="258" y="136" font-size="11.5" fill="#0a84ff">AddEmoji (+, nil)</text>
+  <line x1="250" y1="185" x2="355" y2="185" stroke="#0a84ff" stroke-width="2" marker-end="url(#ar4)"/>
+  <text x="258" y="176" font-size="11.5" fill="#0a84ff">EditEmoji (célula + indexPathForSelectedRow)</text>
+  <line x1="590" y1="145" x2="645" y2="110" stroke="#0a84ff" stroke-width="2" marker-end="url(#ar4)"/>
+  <text x="596" y="130" font-size="11" fill="#0a84ff">topViewController</text>
+  <line x1="650" y1="128" x2="255" y2="205" stroke="#34c759" stroke-width="2" marker-end="url(#ar5)"/>
+  <text x="430" y="255" font-size="11.5" fill="#34c759">unwind “saveUnwind” → prepare do AddEdit entrega o Emoji</text>
+
+  <rect x="20" y="272" width="860" height="76" rx="6" fill="#fff8ec" stroke="#ff9f0a"/>
+  <text x="38" y="296" font-size="12.5" font-weight="700" fill="#1c1c1e">unwindToEmojiTableView(_:) — duas ramificações</text>
+  <text x="38" y="320" font-size="12" fill="#3a3a3c">se indexPathForSelectedRow != nil → emojis[row] = emoji · reloadRows(…, .none)   (Edit)</text>
+  <text x="38" y="340" font-size="12" fill="#3a3a3c">senão → emojis.append(emoji) · insertRows(at: [IndexPath(row: count-1, section: 0)], .automatic)   (Add)</text>
+</svg>
+</div>
+<figcaption>Figura 6. Mapa de segues: duas apresentações modais e o unwind que devolve os dados.</figcaption>
+</figure>
+
+<ol>
+  <li><b>AddEmoji:</b> Control-drag do botão <b>+</b> para o Navigation Controller do Add/Edit → <b>Present Modally</b> → Identifier <code>AddEmoji</code>.</li>
+  <li><b>EditEmoji:</b> Control-drag da <b>célula protótipo</b> para o mesmo Navigation Controller → <b>Present Modally</b> → Identifier <code>EditEmoji</code>.</li>
+  <li><code>prepare(for:)</code> da lista: <code>segue.destination as! UINavigationController</code> → <code>topViewController as! AddEditEmojiTableViewController</code>; no Edit passa <code>emojis[indexPathForSelectedRow.row]</code>.</li>
+  <li><b>saveUnwind:</b> Control-drag do botão <b>Save</b> para o ícone <b>Exit</b> da cena → <code>unwindToEmojiTableView:</code> → Attributes Inspector → Identifier <code>saveUnwind</code>.</li>
+  <li><code>prepare(for:)</code> do formulário: com <code>segue.identifier == "saveUnwind"</code>, monta <code>Emoji(symbol:name:description:usage:)</code> a partir dos quatro campos.</li>
+</ol>
+<div class="res"><b>Resultado esperado:</b> <b>+</b> abre um formulário vazio (Save bloqueado até estar tudo preenchido) e adiciona a linha no fim; tocar numa linha abre o formulário preenchido e o Save substitui a linha na mesma posição; Cancel fecha sem alterar nada.</div>
+
+<h2>7. Para aprender mais</h2>
+<p>Os três tipos de ligação que o Interface Builder cria — e que este projecto usa todos — resumem-se assim:</p>
+
+<figure class="fig">
+<div class="figwrap">
+<svg width="900" height="190" viewBox="0 0 900 190" xmlns="http://www.w3.org/2000/svg">
+  <rect x="20" y="20" width="270" height="150" rx="6" fill="#eef6ff" stroke="#0a84ff"/>
+  <text x="38" y="48" font-size="13" font-weight="700" fill="#1c1c1e">Outlet @IBOutlet</text>
+  <text x="38" y="74" font-size="11.5" fill="#3a3a3c">Elemento visual → propriedade</text>
+  <text x="38" y="96" font-size="11.5" fill="#3a3a3c">symbolLabel, nameLabel, descriptionLabel</text>
+  <text x="38" y="118" font-size="11.5" fill="#3a3a3c">symbolTextField … usageTextField, saveButton</text>
+  <text x="38" y="146" font-size="11" fill="#6c6c70">Sem estes, a célula não consegue escrever texto.</text>
+
+  <rect x="310" y="20" width="270" height="150" rx="6" fill="#f1fbf3" stroke="#34c759"/>
+  <text x="328" y="48" font-size="13" font-weight="700" fill="#1c1c1e">Action @IBAction</text>
+  <text x="328" y="74" font-size="11.5" fill="#3a3a3c">Evento de controlo → método</text>
+  <text x="328" y="96" font-size="11.5" fill="#3a3a3c">textEditingChanged: (Editing Changed)</text>
+  <text x="328" y="118" font-size="11.5" fill="#3a3a3c">cancelButtonTapped:</text>
+  <text x="328" y="146" font-size="11" fill="#6c6c70">É o que liga a validação do Save aos campos.</text>
+
+  <rect x="600" y="20" width="280" height="150" rx="6" fill="#fff8ec" stroke="#ff9f0a"/>
+  <text x="618" y="48" font-size="13" font-weight="700" fill="#1c1c1e">Segue / Unwind</text>
+  <text x="618" y="74" font-size="11.5" fill="#3a3a3c">Transição → destino</text>
+  <text x="618" y="96" font-size="11.5" fill="#3a3a3c">AddEmoji · EditEmoji (modais)</text>
+  <text x="618" y="118" font-size="11.5" fill="#3a3a3c">saveUnwind → unwindToEmojiTableView:</text>
+  <text x="618" y="146" font-size="11" fill="#6c6c70">A passagem de dados faz-se nos prepare(for:).</text>
+</svg>
+</div>
+<figcaption>Figura 7. Os três tipos de ligação usados no projecto.</figcaption>
+</figure>
+
+<p><b>Leituras da ficha:</b> <i>Developing in Swift — Data Collections, Unit 1, Lessons 5–7</i>; documentação UIKit, <code>UINavigationController</code>, <code>UITableViewController</code>, <code>UIStackView</code> e <i>Unwind Segues</i>.</p>
+
+<h2>Resumo final — estrutura e ligações</h2>
+
+<table>
+<tr><th>Secção</th><th>Ficheiro / objecto</th><th>Ligações criadas</th><th>Identificadores</th></tr>
+<tr><td>0–1</td><td><code>Emoji.swift</code></td><td>—</td><td><code>Emoji</code>, <code>sampleEmojis</code></td></tr>
+<tr><td>2</td><td>Navigation Controller → <code>EmojiTableViewController</code></td><td>relationship <i>rootViewController</i></td><td>título “Emoji Dictionary”, System Item <b>Add</b></td></tr>
+<tr><td>3</td><td><code>EmojiTableViewCell</code> (protótipo)</td><td>3 outlets (labels) + 4 constraints</td><td><code>EmojiCell</code>, hugging 252, compression 751</td></tr>
+<tr><td>4</td><td><code>EmojiTableViewController</code></td><td>dataSource/delegate · <code>editButtonItem</code></td><td>altura automática, delete, reorder</td></tr>
+<tr><td>5</td><td><code>AddEditEmojiTableViewController</code></td><td>5 outlets + 5 acções (4 campos + Cancel)</td><td>4 secções <i>static cells</i>, Inset Grouped</td></tr>
+<tr><td>6</td><td>Segues</td><td>2 segues <i>presentation</i> + 1 <i>unwind</i></td><td><code>AddEmoji</code>, <code>EditEmoji</code>, <code>saveUnwind</code></td></tr>
+</table>
+
+<h3>Evidência da verificação</h3>
+<p>Comando único, corrido na pasta do projecto:</p>
+<pre>python Tools/verify_project.py</pre>
+<table>
+<tr><th>Grupo de verificações</th><th>O que afere</th><th>Resultado</th></tr>
+<tr><td>1. ficheiros e sintaxe</td><td>9 ficheiros existem; storyboards XML bem formado; Info.plist é plist; 3 <code>Contents.json</code></td><td>OK</td></tr>
+<tr><td>2. Info.plist</td><td><code>UISceneStoryboardFile = Main</code>, <code>UISceneDelegateClassName</code>, <code>UILaunchStoryboardName</code></td><td>OK</td></tr>
+<tr><td>3. Main.storyboard</td><td>initial VC, classes, módulo, título, botão Add, célula+identifier, 3 outlets, stacks, 4 constraints, hugging/compression, 4 secções estáticas, 4 campos e placeholders, 5 outlets, 4 acções <i>editingChanged</i>, botão Save, unwind <code>saveUnwind</code></td><td>OK</td></tr>
+<tr><td>4. storyboard ↔ Swift</td><td>cada outlet/acção/segue declarado tem a contrapartida no código (7 outlets, 3 acções, <code>EmojiCell</code>, <code>AddEmoji</code>/<code>EditEmoji</code>/<code>saveUnwind</code>, <code>editButtonItem</code>, altura automática, 6 emojis)</td><td>OK</td></tr>
+<tr><td>5. project.pbxproj</td><td>9 referências de ficheiro com o ficheiro presente; 5 Swift na fase <i>Sources</i>; storyboards e assets na fase <i>Resources</i>; <code>INFOPLIST_FILE</code>, bundle id, Swift 5, iOS 16</td><td>OK</td></tr>
+<tr><td colspan="2"><b>Total</b></td><td><b>111 verificações · 0 falhas</b></td></tr>
+</table>
+
+<div class="warn">
+<b>O que a verificação não cobre (e como fechar o ciclo).</b> Não há Xcode neste Windows, por isso nada aqui prova que o código <i>compila</i> ou que a app <i>corre</i>. O que fica provado é que a estrutura, as ligações e o projecto estão completos e coerentes. Para fechar: abrir <code>EmojiDictionary.xcodeproj</code> num Mac (ou na VM de macOS) e correr no simulador; o guião de verificação volta a passar depois de qualquer edição, e é o sítio onde se apanha um outlet esquecido antes de compilar.
+</div>
+
+</body>
+</html>
