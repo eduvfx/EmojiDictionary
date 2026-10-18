@@ -90,16 +90,33 @@ jobs:
           echo "(xcresulttool export não disponível nesta versão do Xcode — as imagens ficam dentro de testes.xcresult)"
           ls -la artifacts/screenshots | head -20
 
-      - name: Empacotar o .app para o Appetize.io
+      - name: Compilar app universal limpa e empacotar para o Appetize.io
         if: always()
         run: |
-          set -euo pipefail
-          APP=$(find build/Build/Products -maxdepth 3 -name "EmojiDictionary.app" | head -1)
+          set -uo pipefail
+          mkdir -p artifacts
+          # App limpa (sem plugins de teste) e universal (arm64 + x86_64) para
+          # correr em qualquer infraestrutura do Appetize.io.
+          xcodebuild build \
+            -project EmojiDictionary.xcodeproj \
+            -scheme EmojiDictionary \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -derivedDataPath build-app \
+            ARCHS="arm64 x86_64" ONLY_ACTIVE_ARCH=NO \
+            CODE_SIGNING_ALLOWED=NO | tail -15 || true
+          APP=$(find build-app/Build/Products -maxdepth 3 -name "EmojiDictionary.app" | head -1)
+          if [ -z "$APP" ]; then
+            echo "build universal falhou — uso o .app do build de testes"
+            APP=$(find build/Build/Products -maxdepth 3 -name "EmojiDictionary.app" | head -1)
+          fi
           if [ -n "$APP" ]; then
+            echo "app: $APP"
+            lipo -info "$APP/EmojiDictionary" || true
             ditto -c -k --keepParent "$APP" artifacts/EmojiDictionary-app.zip
             ls -la artifacts/EmojiDictionary-app.zip
           else
-            echo "não encontrei o .app compilado"
+            echo "não encontrei nenhum .app"
           fi
 
       - name: Screenshot final (depois dos testes)
