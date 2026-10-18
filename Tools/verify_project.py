@@ -300,6 +300,39 @@ for frag, label in [('runs-on: macos', 'CI corre num runner macOS'),
                     ('upload-artifact', 'CI publica as imagens/testes como artefacto')]:
     check(frag in wf, label)
 
+print('== 7. testes de interface (XCUITest) ==')
+UITESTS = os.path.join(ROOT, 'EmojiDictionaryUITests', 'EmojiDictionaryUITests.swift')
+check(os.path.isfile(UITESTS), 'existe EmojiDictionaryUITests/EmojiDictionaryUITests.swift')
+src_ui = read(UITESTS) if os.path.isfile(UITESTS) else ''
+check('class EmojiDictionaryUITests: XCTestCase' in src_ui, 'classe XCTestCase dos testes de interface')
+check(src_ui.count('func test') >= 7, f'pelo menos 7 testes de interface (tem {src_ui.count("func test")})')
+for api, label in [('XCUIApplication()', 'arranca a app (XCUIApplication)'),
+                   ('app.launch()', 'faz launch da app'),
+                   ('XCUIScreen.main.screenshot()', 'tira screenshots do ecrã'),
+                   ('XCTAttachment(screenshot:', 'anexa as imagens ao relatório de testes'),
+                   ('typeText(', 'escreve nos campos (usa as opções)'),
+                   ('.tap()', 'toca nos botões (usa as opções)'),
+                   ('swipeLeft()', 'faz swipe para apagar'),
+                   ('thenDragTo:', 'arrasta para reordenar')]:
+    check(api in src_ui, f'os testes de interface: {label}')
+check('buttons["Add"]' in src_ui, 'toca no botão + da barra')
+check('navigationBars["Add Emoji"]' in src_ui and 'navigationBars["Edit Emoji"]' in src_ui, 'verifica os títulos das duas cenas do formulário')
+check('isEnabled' in src_ui, 'verifica o estado activo/desactivado do Save')
+check('cells().count' in src_ui, 'conta as células da lista')
+
+check('com.apple.product-type.bundle.ui-testing' in pbx, 'pbxproj tem alvo de testes de interface (ui-testing)')
+check('TEST_TARGET_NAME = EmojiDictionary;' in pbx, 'TEST_TARGET_NAME aponta para a app')
+check('EmojiDictionaryUITests.swift in Sources' in pbx, 'o ficheiro de UI tests está na fase Sources')
+check('EmojiDictionaryUITests.xctest' in pbx, 'o produto .xctest de interface está declarado')
+check(pbx.count('TestTargetID = AA0000000000000000000002;') == 2, 'ambos os alvos de teste estão ligados à app')
+check('AA0000000000000000000035 /* Build configuration list for PBXNativeTarget "EmojiDictionaryUITests" */' in pbx,
+      'o alvo de UI tests tem lista de configurações')
+check(scheme.count('<TestableReference') == 2, 'o scheme corre os dois alvos de teste')
+check('BlueprintIdentifier = "AA0000000000000000000034"' in scheme, 'o scheme inclui o alvo de testes de interface')
+check('recordVideo' in wf, 'CI grava vídeo do simulador durante os testes')
+check('xcresulttool export attachments' in wf, 'CI extrai os screenshots do relatório de testes')
+check('EmojiDictionary-app.zip' in wf, 'CI empacota o .app (para abrir no Appetize.io)')
+
 print()
 print(f'verificações: {checks}   falhas: {len(fails)}')
 if fails:

@@ -58,16 +58,47 @@ jobs:
           xcrun simctl io "$UDID" screenshot artifacts/01-lista.png
           ls -la artifacts
 
-      - name: Testes unitários no simulador
+      - name: Testes (unitários + interface) no simulador, com vídeo
         run: |
           set -o pipefail
+          UDID="${{ steps.sim.outputs.udid }}"
+          xcrun simctl io "$UDID" recordVideo --codec=h264 --force artifacts/app-em-uso.mp4 &
+          REC=$!
+          set +e
           xcodebuild test \
             -project EmojiDictionary.xcodeproj \
             -scheme EmojiDictionary \
-            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -destination "id=$UDID" \
             -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO \
-            -resultBundlePath artifacts/testes.xcresult | tail -60
+            -resultBundlePath artifacts/testes.xcresult | tail -80
+          RC=$?
+          set -e
+          kill -INT $REC 2>/dev/null || true
+          sleep 5
+          ls -la artifacts
+          echo "xcodebuild test rc=$RC"
+          exit $RC
+
+      - name: Extrair screenshots dos testes
+        if: always()
+        run: |
+          mkdir -p artifacts/screenshots
+          xcrun xcresulttool export attachments --path artifacts/testes.xcresult --output-path artifacts/screenshots 2>&1 | tail -5 || \
+          echo "(xcresulttool export não disponível nesta versão do Xcode — as imagens ficam dentro de testes.xcresult)"
+          ls -la artifacts/screenshots | head -20
+
+      - name: Empacotar o .app para o Appetize.io
+        if: always()
+        run: |
+          set -euo pipefail
+          APP=$(find build/Build/Products -maxdepth 3 -name "EmojiDictionary.app" | head -1)
+          if [ -n "$APP" ]; then
+            ditto -c -k --keepParent "$APP" artifacts/EmojiDictionary-app.zip
+            ls -la artifacts/EmojiDictionary-app.zip
+          else
+            echo "não encontrei o .app compilado"
+          fi
 
       - name: Screenshot final (depois dos testes)
         if: always()

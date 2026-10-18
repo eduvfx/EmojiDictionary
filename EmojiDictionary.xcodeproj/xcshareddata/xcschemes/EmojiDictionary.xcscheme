@@ -38,6 +38,16 @@
                ReferencedContainer = "container:EmojiDictionary.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AA0000000000000000000034"
+               BuildableName = "EmojiDictionaryUITests.xctest"
+               BlueprintName = "EmojiDictionaryUITests"
+               ReferencedContainer = "container:EmojiDictionary.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
