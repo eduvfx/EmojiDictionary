@@ -116,5 +116,5 @@ jobs:
           name: ios-simulator
           path: |
             artifacts/
-            build/Logs/Test/*.xcresult/../*.log
+            build/Logs/Test
           if-no-files-found: warn

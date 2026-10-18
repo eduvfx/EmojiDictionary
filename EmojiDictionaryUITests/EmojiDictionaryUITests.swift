@@ -165,11 +165,17 @@ final class EmojiDictionaryUITests: XCTestCase {
         app.navigationBars["Emoji Dictionary"].buttons["Edit"].tap()
         shot("11-modo-edicao")
 
-        let handles = cells().buttons.matching(identifier: "Reorder")
-        guard handles.count > 1 else {
-            return XCTFail("no modo de edição devia haver pegas de reordenamento (encontrei \(handles.count))")
-        }
-        handles.element(boundBy: 0).press(forDuration: 0.8, thenDragTo: cells().element(boundBy: 3))
+        // Diagnóstico: como é que o iOS expõe a pega de reordenar nesta versão
+        let cell0 = cells().element(boundBy: 0)
+        print("DIAG celula 0 (modo edicao) botoes: " +
+              cell0.buttons.allElementsBoundByIndex.map { "id='\($0.identifier)' label='\($0.label)'" }.joined(separator: " | "))
+        print("DIAG celula 0 (modo edicao) outros: " +
+              cell0.otherElements.allElementsBoundByIndex.map { "id='\($0.identifier)' label='\($0.label)'" }.joined(separator: " | "))
+
+        // Arrastar a partir da margem direita da célula (onde vive a pega de reordenamento)
+        let origem = cell0.coordinate(withNormalizedOffset: CGVector(dx: 0.95, dy: 0.5))
+        let destino = cells().element(boundBy: 3).coordinate(withNormalizedOffset: CGVector(dx: 0.95, dy: 0.5))
+        origem.press(forDuration: 0.9, thenDragTo: destino, withVelocity: .slow, thenHoldForDuration: 0.8)
         shot("12-depois-de-reordenar")
 
         let firstAfter = firstCellStaticTexts().first ?? ""
@@ -182,12 +188,25 @@ final class EmojiDictionaryUITests: XCTestCase {
     func test08_DeleteInEditMode() {
         XCTAssertTrue(app.navigationBars["Emoji Dictionary"].waitForExistence(timeout: 10))
         app.navigationBars["Emoji Dictionary"].buttons["Edit"].tap()
-        let badge = cells().element(boundBy: 0).buttons.matching(identifier: "Delete").firstMatch
-        XCTAssertTrue(badge.waitForExistence(timeout: 5), "no modo de edição a célula devia ter o badge Delete")
-        badge.tap()
-        cells().element(boundBy: 0).buttons["Delete"].tap()
+
+        let cell = cells().element(boundBy: 0)
+        let btns = cell.buttons.allElementsBoundByIndex
+        print("DIAG apagar em modo edicao, botoes: " +
+              btns.map { "id='\($0.identifier)' label='\($0.label)'" }.joined(separator: " | "))
+
+        if let badge = btns.first(where: { $0.identifier == "Delete" || $0.label == "Delete" }) {
+            badge.tap()
+        } else {
+            // o badge de apagar fica na margem esquerda da célula
+            cell.coordinate(withNormalizedOffset: CGVector(dx: 0.04, dy: 0.5)).tap()
+        }
+        shot("13a-badge-tocado")
+
+        let confirm = app.buttons["Delete"].firstMatch
+        XCTAssertTrue(confirm.waitForExistence(timeout: 6), "depois de tocar no badge devia aparecer o botão de confirmação Delete")
+        confirm.tap()
         shot("13-delete-modo-edicao")
-        XCTAssertEqual(cells().count, 5)
+        XCTAssertEqual(cells().count, 5, "a lista devia ficar com 5 emojis")
         app.navigationBars["Emoji Dictionary"].buttons["Done"].tap()
     }
 }

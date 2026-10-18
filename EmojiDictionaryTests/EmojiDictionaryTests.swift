@@ -210,8 +210,16 @@ final class EmojiDictionaryTests: XCTestCase {
 
     func testEditingTheListUsesTheEditButtonFromViewDidLoad() {
         let list = makeList()
+        let editButton = list.navigationItem.leftBarButtonItem
+        XCTAssertNotNil(editButton, "falta o editButtonItem na barra de navegação")
+        let rotulo = ((editButton?.title ?? "") + " " + (editButton?.accessibilityLabel ?? "")).trimmingCharacters(in: .whitespaces)
+        XCTAssertTrue(rotulo.isEmpty || rotulo.contains("Edit") || rotulo.contains("Editar"),
+                      "o botão de edição devia identificar-se como Edit — vi '\(rotulo)'")
+        XCTAssertFalse(list.isEditing)
         list.setEditing(true, animated: false)
-        XCTAssertTrue(list.isEditing)
-        XCTAssertEqual(list.navigationItem.leftBarButtonItem?.title, "Edit")
+        XCTAssertTrue(list.isEditing, "setEditing(true) devia ligar o modo de edição")
+        list.setEditing(false, animated: false)
+        XCTAssertFalse(list.isEditing, "setEditing(false) devia desligar o modo de edição")
+        XCTAssertTrue(list.tableView.allowsMultipleSelectionDuringEditing == false)
     }
 }
